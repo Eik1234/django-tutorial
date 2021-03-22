@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from .models import Article
 from . import forms
 
+
 # Create your views here.
 def article_list(request):
     articles = Article.objects.all().order_by('date')
@@ -20,7 +21,9 @@ def article_create(request):
     if request.method == 'POST':
         form = forms.CreateArticle(request.POST, request.FILES)
         if form.is_valid():
-            # TODO(eik): save article to db
+            instance = form.save(commit=False)
+            instance.author = request.user
+            instance.save()
             return redirect('articles:list') 
     else:
         form = forms.CreateArticle()
